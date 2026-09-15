@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scan — CashTrash</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <a href="dashboard.html" class="logo">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#FAFAF3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v5h5"/></svg>
+      </span>
+      CashTrash
+    </a>
+    <div class="nav-links app-nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="scan.html" class="active">Scan</a>
+      <a href="history.html">History</a>
+      <a href="centers.html">Centers</a>
+    </div>
+    <div class="app-nav-right">
+      <span class="points-pill">1,240 pts</span>
+      <span class="avatar">AS</span>
+    </div>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="wrap">
+    <div class="mobile-panel">
+      <div class="mobile-points"><span>Aanya Sen</span><span>1,240 pts</span></div>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="scan.html">Scan</a>
+      <a href="history.html">History</a>
+      <a href="centers.html">Centers</a>
+    </div>
+  </div>
+</header>
+
+<section class="page-head">
+  <div class="wrap">
+    <div class="kicker">Scan waste</div>
+    <h1>What are you throwing away?</h1>
+    <p>Take a photo or upload one — CashTrash will tell you exactly where it goes.</p>
+  </div>
+</section>
+
+<section class="page-body">
+  <div class="wrap">
+    <div class="scan-layout">
+
+      <div class="scan-upload-col">
+
+        <!-- Upload state -->
+        <div id="uploadState">
+          <div class="dropzone" id="dropzone">
+            <div class="dropzone-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#3F6B44" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="4"/><path d="M4 8h3l2-3h6l2 3h3v11H4z"/></svg>
+            </div>
+            <h3>Drag a photo here</h3>
+            <p>or use your camera, or choose a file from your device</p>
+            <div class="dropzone-actions">
+              <button class="btn btn-deep" id="cameraBtn" type="button">Use camera</button>
+              <button class="btn btn-outline" id="uploadBtn" type="button">Upload photo</button>
+            </div>
+            <input type="file" id="photoInput" accept="image/*">
+          </div>
+        </div>
+
+        <!-- Preview / scanning state -->
+        <div class="preview-wrap" id="previewWrap">
+          <div class="preview-frame">
+            <img id="previewImg" src="" alt="Photo of the item to scan">
+            <span class="scan-scanning-badge" id="scanningBadge">Identifying…</span>
+          </div>
+          <div class="result-actions">
+            <button class="btn btn-amber" id="analyzeBtn" type="button">Analyze photo</button>
+            <button class="btn btn-outline" id="retakeBtn" type="button">Choose a different photo</button>
+          </div>
+        </div>
+
+        <!-- Result state -->
+        <div class="result-state" id="resultState">
+          <div class="result-banner">
+            <div>
+              <div class="result-pts-label">Points earned</div>
+              <div class="result-pts">+15 pts</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="result-pts-label">Identified as</div>
+              <div style="font-family:'Fraunces', serif; font-weight:600; font-size:1.15rem;">Plastic · PET bottle</div>
+            </div>
+          </div>
+
+          <div class="card result-detail-card">
+            <div class="result-detail-row"><span>Bin</span><span>Blue Bin — Recyclables</span></div>
+            <div class="result-detail-row"><span>Confidence</span><span>96%</span></div>
+            <div class="result-detail-row"><span>Disposal note</span><span>Rinse before disposing. Cap can stay on.</span></div>
+          </div>
+
+          <div class="result-actions">
+            <button class="btn btn-deep" id="scanAnotherBtn" type="button">Scan another item</button>
+            <a href="history.html" class="btn btn-outline">View in history</a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="scan-info-col">
+        <div class="info-block">
+          <h3>What CashTrash can identify</h3>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Plastic, paper, glass, and metal</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Organic and food waste</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>E-waste (batteries, cables, devices)</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>"Unknown" when it isn't sure — never a guess</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h3>Tips for a clean scan</h3>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Good lighting helps the model see material texture</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Fill the frame with just the one item</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>Empty and rinse containers first</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>CashTrash — Community Waste Management &amp; Recycling Platform</div>
+    <div class="team">Adrija Dutta · Harshita Jha · Ritisha Mondal · Zeba Afreen</div>
+  </div>
+</footer>
+
+<script src="js/script.js"></script>
+<script src="js/scan.js"></script>
+</body>
+</html>

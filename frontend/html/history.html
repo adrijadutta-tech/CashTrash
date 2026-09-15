@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scan History — CashTrash</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <a href="dashboard.html" class="logo">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#FAFAF3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v5h5"/></svg>
+      </span>
+      CashTrash
+    </a>
+    <div class="nav-links app-nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="scan.html">Scan</a>
+      <a href="history.html" class="active">History</a>
+      <a href="centers.html">Centers</a>
+    </div>
+    <div class="app-nav-right">
+      <span class="points-pill">1,240 pts</span>
+      <span class="avatar">AS</span>
+    </div>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="wrap">
+    <div class="mobile-panel">
+      <div class="mobile-points"><span>Aanya Sen</span><span>1,240 pts</span></div>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="scan.html">Scan</a>
+      <a href="history.html">History</a>
+      <a href="centers.html">Centers</a>
+    </div>
+  </div>
+</header>
+
+<section class="page-head">
+  <div class="wrap">
+    <div class="kicker">Scan history</div>
+    <h1>Everything you've sorted</h1>
+    <p>156 scans since you joined. Filter by waste type to find a past result.</p>
+  </div>
+</section>
+
+<section class="page-body">
+  <div class="wrap">
+
+    <div class="chip-row" id="chipRow">
+      <button class="chip active" data-filter="all">All</button>
+      <button class="chip" data-filter="plastic">Plastic</button>
+      <button class="chip" data-filter="paper">Paper</button>
+      <button class="chip" data-filter="glass">Glass</button>
+      <button class="chip" data-filter="metal">Metal</button>
+      <button class="chip" data-filter="organic">Organic</button>
+      <button class="chip" data-filter="ewaste">E-waste</button>
+    </div>
+
+    <div class="card">
+      <div class="history-table-wrap">
+        <table class="history-table" id="historyTable">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Bin</th>
+              <th>Points</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-type="plastic">
+              <td><span class="history-item-name"><span class="history-swatch"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="13" r="4"/><path d="M4 8h3l2-3h6l2 3h3v11H4z"/></svg></span>Plastic bottle</span></td>
+              <td>Blue Bin — Recyclables</td>
+              <td class="history-pts">+15</td>
+              <td>Today, 9:42 AM</td>
+            </tr>
+            <tr data-type="paper">
+              <td><span class="history-item-name"><span class="history-swatch"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/></svg></span>Cardboard box</td>
+              <td>Green Bin — Paper &amp; Card</td>
+              <td class="history-pts">+10</td>
+              <td>Yesterday, 6:10 PM</td>
+            </tr>
+            <tr data-type="ewaste">
+              <td><span class="history-item-name"><span class="history-swatch"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/></svg></span>Old phone charger</td>
+              <td>E-waste — Collection point</td>
+              <td class="history-pts">+25</td>
+              <td>Sep 12, 5:02 PM</td>
+            </tr>
+            <tr data-type="glass">
+              <td><span class="history-item-name"><span class="history-swatch"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M8 2h8l1 6-3 4v10H10V12L7 8z"/></svg></span>Glass jar</td>
+              <td>Blue Bin — Recyclables</td>
+              <td class="history-pts">+15</td>
+              <td>Sep 11, 8:20 AM</td>
+            </tr>
+            <tr data-type="organic">
+              <td><span class="history-item-name"><span class="history-swatch"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 21c-4-2-7-6-7-10a7 7 0 0 1 14 0c0 4-3 8-7 10z"/></svg></span>Vegetable peels</td>
+              <td>Brown Bin — Organic</td>
+              <td class="history-pts">+8</td>
+              <td>Sep 10, 1:15 PM</td>
+            </tr>
+            <tr data-type="metal">
+              <td><span class="history-item-name"><span class="history-swatch"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg></span>Aluminium can</td>
+              <td>Blue Bin — Recyclables</td>
+              <td class="history-pts">+15</td>
+              <td>Sep 9, 7:48 PM</td>
+            </tr>
+            <tr data-type="plastic">
+              <td><span class="history-item-name"><span class="history-swatch"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="13" r="4"/><path d="M4 8h3l2-3h6l2 3h3v11H4z"/></svg></span>Yogurt tub</td>
+              <td>Blue Bin — Recyclables</td>
+              <td class="history-pts">+12</td>
+              <td>Sep 8, 12:30 PM</td>
+            </tr>
+            <tr data-type="paper">
+              <td><span class="history-item-name"><span class="history-swatch"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/></svg></span>Newspaper stack</td>
+              <td>Green Bin — Paper &amp; Card</td>
+              <td class="history-pts">+10</td>
+              <td>Sep 7, 9:05 AM</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="history-card-list" id="historyCards">
+        <div class="history-card" data-type="plastic">
+          <div class="history-card-top">
+            <span class="history-card-name"><span class="history-swatch"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="13" r="4"/><path d="M4 8h3l2-3h6l2 3h3v11H4z"/></svg></span>Plastic bottle</span>
+            <span class="history-pts">+15</span>
+          </div>
+          <div class="history-card-meta"><span>Blue Bin — Recyclables</span><span>Today, 9:42 AM</span></div>
+        </div>
+        <div class="history-card" data-type="paper">
+          <div class="history-card-top">
+            <span class="history-card-name"><span class="history-swatch"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/></svg></span>Cardboard box</span>
+            <span class="history-pts">+10</span>
+          </div>
+          <div class="history-card-meta"><span>Green Bin — Paper &amp; Card</span><span>Yesterday, 6:10 PM</span></div>
+        </div>
+        <div class="history-card" data-type="ewaste">
+          <div class="history-card-top">
+            <span class="history-card-name"><span class="history-swatch"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/></svg></span>Old phone charger</span>
+            <span class="history-pts">+25</span>
+          </div>
+          <div class="history-card-meta"><span>E-waste — Collection point</span><span>Sep 12, 5:02 PM</span></div>
+        </div>
+        <div class="history-card" data-type="glass">
+          <div class="history-card-top">
+            <span class="history-card-name"><span class="history-swatch"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M8 2h8l1 6-3 4v10H10V12L7 8z"/></svg></span>Glass jar</span>
+            <span class="history-pts">+15</span>
+          </div>
+          <div class="history-card-meta"><span>Blue Bin — Recyclables</span><span>Sep 11, 8:20 AM</span></div>
+        </div>
+        <div class="history-card" data-type="organic">
+          <div class="history-card-top">
+            <span class="history-card-name"><span class="history-swatch"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 21c-4-2-7-6-7-10a7 7 0 0 1 14 0c0 4-3 8-7 10z"/></svg></span>Vegetable peels</span>
+            <span class="history-pts">+8</span>
+          </div>
+          <div class="history-card-meta"><span>Brown Bin — Organic</span><span>Sep 10, 1:15 PM</span></div>
+        </div>
+        <div class="history-card" data-type="metal">
+          <div class="history-card-top">
+            <span class="history-card-name"><span class="history-swatch"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg></span>Aluminium can</span>
+            <span class="history-pts">+15</span>
+          </div>
+          <div class="history-card-meta"><span>Blue Bin — Recyclables</span><span>Sep 9, 7:48 PM</span></div>
+        </div>
+        <div class="history-card" data-type="plastic">
+          <div class="history-card-top">
+            <span class="history-card-name"><span class="history-swatch"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="13" r="4"/><path d="M4 8h3l2-3h6l2 3h3v11H4z"/></svg></span>Yogurt tub</span>
+            <span class="history-pts">+12</span>
+          </div>
+          <div class="history-card-meta"><span>Blue Bin — Recyclables</span><span>Sep 8, 12:30 PM</span></div>
+        </div>
+        <div class="history-card" data-type="paper">
+          <div class="history-card-top">
+            <span class="history-card-name"><span class="history-swatch"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/></svg></span>Newspaper stack</span>
+            <span class="history-pts">+10</span>
+          </div>
+          <div class="history-card-meta"><span>Green Bin — Paper &amp; Card</span><span>Sep 7, 9:05 AM</span></div>
+        </div>
+      </div>
+
+      <div class="empty-state" id="emptyState">
+        <p>No scans of this type yet.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>CashTrash — Community Waste Management &amp; Recycling Platform</div>
+    <div class="team">Adrija Dutta · Harshita Jha · Ritisha Mondal · Zeba Afreen</div>
+  </div>
+</footer>
+
+<script src="js/script.js"></script>
+<script src="js/history.js"></script>
+</body>
+</html>

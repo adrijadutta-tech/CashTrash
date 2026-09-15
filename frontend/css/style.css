@@ -1,4 +1,4 @@
-:root{
+  :root{
     --deep: #1F3B26;
     --deep-2: #16291B;
     --moss: #3F6B44;
@@ -111,7 +111,14 @@
     padding:14px 26px;
     border-radius:8px;
     font-weight:600; font-size:0.98rem;
+    font-family:'Inter', sans-serif;
     border:1px solid transparent;
+    background:none;
+    color:inherit;
+    cursor:pointer;
+    appearance:none;
+    -webkit-appearance:none;
+    text-align:center;
   }
   .btn-amber{background:var(--amber); color:var(--deep-2);}
   .btn-amber:hover{background:var(--amber-dark); color:var(--cream);}

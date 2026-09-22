@@ -1,18 +1,22 @@
 // Opens (and if needed, creates) the SQLite database and its schema.
-// better-sqlite3 is synchronous — no callbacks/promises needed for queries.
+//
+// Uses Node's BUILT-IN `node:sqlite` module (stable since Node ~22.5+)
+// instead of the `better-sqlite3` npm package. Same synchronous API shape
+// (prepare/run/get/all), but nothing to compile — no Visual Studio Build
+// Tools, no node-gyp, no native binary. Requires Node 22.5 or newer.
 
 const path = require('path');
 const fs = require('fs');
-const Database = require('better-sqlite3');
+const { DatabaseSync } = require('node:sqlite');
 
 const DB_PATH = process.env.DATABASE_FILE || './data/cashtrash.db';
 const resolvedPath = path.resolve(__dirname, '..', DB_PATH);
 
 fs.mkdirSync(path.dirname(resolvedPath), { recursive: true });
 
-const db = new Database(resolvedPath);
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+const db = new DatabaseSync(resolvedPath);
+db.exec('PRAGMA journal_mode = WAL;');
+db.exec('PRAGMA foreign_keys = ON;');
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
@@ -64,8 +68,8 @@ if (centerCount === 0) {
     { name: 'Lake Town Material Bank', address: 'VIP Road, Lake Town, Kolkata', distance_km: 6.1, materials: 'paper,plastic', is_open: 0, hours_note: 'Closed · Opens 9:00 AM' },
     { name: 'Dum Dum Civic Collection Center', address: 'Near Dum Dum Metro, Kolkata', distance_km: 7.5, materials: 'ewaste,metal', is_open: 1, hours_note: 'Open · Closes 6:30 PM' }
   ];
-  const insertMany = db.transaction((rows) => rows.forEach((row) => insertCenter.run(row)));
-  insertMany(seedCenters);
+  // Just five rows on first run — no need for an explicit transaction wrapper.
+  seedCenters.forEach((row) => insertCenter.run(row));
 }
 
 module.exports = db;

@@ -1,4 +1,6 @@
-// Scan page: upload -> preview -> simulated analysis -> result
+// Scan page: upload -> preview -> real API analysis -> result
+requireLogin();
+
 const uploadState = document.getElementById('uploadState');
 const previewWrap = document.getElementById('previewWrap');
 const resultState = document.getElementById('resultState');
@@ -13,7 +15,10 @@ const retakeBtn = document.getElementById('retakeBtn');
 const scanAnotherBtn = document.getElementById('scanAnotherBtn');
 const dropzone = document.getElementById('dropzone');
 
+let selectedFile = null;
+
 function showPreview(file) {
+  selectedFile = file;
   const url = URL.createObjectURL(file);
   previewImg.src = url;
   scanningBadge.style.display = 'none';
@@ -53,19 +58,46 @@ if (dropzone) {
   });
 }
 
+function renderResult(scan) {
+  document.querySelector('.result-pts').textContent = `+${scan.points} pts`;
+  document.querySelector('.result-banner div:last-child div:last-child').textContent =
+    `${scan.category.charAt(0).toUpperCase() + scan.category.slice(1)} · ${scan.item_name}`;
+
+  const rows = document.querySelectorAll('.result-detail-row span:last-child');
+  rows[0].textContent = scan.bin;
+  rows[1].textContent = `${scan.confidence}%`;
+  rows[2].textContent = scan.disposal_note;
+}
+
 if (analyzeBtn) {
-  analyzeBtn.addEventListener('click', () => {
+  analyzeBtn.addEventListener('click', async () => {
+    if (!selectedFile) return;
+
     scanningBadge.style.display = 'inline-block';
     analyzeBtn.disabled = true;
     analyzeBtn.textContent = 'Analyzing…';
 
-    // Simulated AI processing delay for the prototype demo
-    setTimeout(() => {
+    try {
+      const formData = new FormData();
+      formData.append('photo', selectedFile);
+
+      const data = await apiFetch('/scans', { method: 'POST', body: formData });
+
+      renderResult(data.scan);
       previewWrap.classList.remove('active');
       resultState.classList.add('active');
+
+      // Points changed — refresh the nav's points pill from the server
+      apiFetch('/auth/me').then((res) => {
+        Auth.setSession(Auth.getToken(), res.user);
+        if (typeof renderUserChrome === 'function') renderUserChrome(res.user);
+      }).catch(() => {});
+    } catch (err) {
+      alert(err.message || 'Could not analyze this photo. Is the backend running?');
+    } finally {
       analyzeBtn.disabled = false;
       analyzeBtn.textContent = 'Analyze photo';
-    }, 1200);
+    }
   });
 }
 
@@ -74,6 +106,7 @@ if (retakeBtn) {
     previewWrap.classList.remove('active');
     uploadState.style.display = 'block';
     photoInput.value = '';
+    selectedFile = null;
   });
 }
 
@@ -82,5 +115,6 @@ if (scanAnotherBtn) {
     resultState.classList.remove('active');
     uploadState.style.display = 'block';
     photoInput.value = '';
+    selectedFile = null;
   });
 }

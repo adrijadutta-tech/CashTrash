@@ -6,8 +6,8 @@
 <title>Scan — CashTrash</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/app.css">
 </head>
 <body>
 
@@ -27,7 +27,7 @@
     </div>
     <div class="app-nav-right">
       <span class="points-pill">1,240 pts</span>
-      <span class="avatar">AS</span>
+      <span class="avatar" title="Log out">AS</span>
     </div>
     <button class="nav-toggle" aria-label="Open menu" aria-expanded="false">
       <span></span><span></span><span></span>
@@ -40,6 +40,7 @@
       <a href="scan.html">Scan</a>
       <a href="history.html">History</a>
       <a href="centers.html">Centers</a>
+      <a href="#" id="logoutLink">Log out</a>
     </div>
   </div>
 </header>
@@ -144,6 +145,8 @@
   </div>
 </footer>
 
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
 <script src="js/script.js"></script>
 <script src="js/scan.js"></script>
 </body>

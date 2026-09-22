@@ -6,8 +6,8 @@
 <title>Dashboard — CashTrash</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/app.css">
 </head>
 <body>
 
@@ -27,7 +27,7 @@
     </div>
     <div class="app-nav-right">
       <span class="points-pill">1,240 pts</span>
-      <span class="avatar">AS</span>
+      <span class="avatar" title="Log out">AS</span>
     </div>
     <button class="nav-toggle" aria-label="Open menu" aria-expanded="false">
       <span></span><span></span><span></span>
@@ -40,6 +40,7 @@
       <a href="scan.html">Scan</a>
       <a href="history.html">History</a>
       <a href="centers.html">Centers</a>
+      <a href="#" id="logoutLink">Log out</a>
     </div>
   </div>
 </header>
@@ -47,8 +48,8 @@
 <section class="page-head">
   <div class="wrap">
     <div class="kicker">Welcome back</div>
-    <h1>Hi Aanya, here's where things stand</h1>
-    <p>You've kept 42 items out of landfill this month. Nice work.</p>
+    <h1 id="greeting">Hi there, here's where things stand</h1>
+    <p id="greetingSub">Scan an item to start tracking your impact.</p>
   </div>
 </section>
 
@@ -58,18 +59,18 @@
     <div class="stat-grid">
       <div class="stat-card">
         <div class="stat-label">Total points</div>
-        <div class="stat-value">1,240</div>
-        <div class="stat-sub">+85 this week</div>
+        <div class="stat-value" id="statPoints">—</div>
+        <div class="stat-sub">Earned from every correct scan</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Items scanned</div>
-        <div class="stat-value">156</div>
-        <div class="stat-sub">42 this month</div>
+        <div class="stat-value" id="statItems">—</div>
+        <div class="stat-sub" id="statItemsMonth">— this month</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Sorting accuracy</div>
-        <div class="stat-value">94%</div>
-        <div class="stat-sub">Correctly sorted on first scan</div>
+        <div class="stat-label">Sorting confidence</div>
+        <div class="stat-value" id="statAccuracy">—</div>
+        <div class="stat-sub">Scans identified with high confidence</div>
       </div>
     </div>
 
@@ -79,12 +80,12 @@
         <div class="card reward-card">
           <div class="reward-top">
             <h3>Progress to next reward</h3>
-            <span class="reward-target">1,240 / 1,500 pts</span>
+            <span class="reward-target" id="rewardTarget">— / — pts</span>
           </div>
           <div class="progress-bar">
-            <div class="progress-fill" style="width:82%"></div>
+            <div class="progress-fill" id="rewardProgressFill" style="width:0%"></div>
           </div>
-          <p class="reward-note">260 points to a free reusable tote from a partner recycling center.</p>
+          <p class="reward-note" id="rewardNote">Scan your first item to start earning points.</p>
         </div>
 
         <div class="quick-grid">
@@ -109,37 +110,8 @@
           <h3 style="margin-bottom:6px;">Recent activity</h3>
           <p style="color:var(--ink-soft); font-size:0.88rem; margin-bottom:6px;">Your last few scans</p>
 
-          <div class="activity-row">
-            <div class="activity-left">
-              <div class="activity-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="13" r="4"/><path d="M4 8h3l2-3h6l2 3h3v11H4z"/></svg></div>
-              <div>
-                <div class="activity-name">Plastic bottle — Blue Bin</div>
-                <div class="activity-date">Today, 9:42 AM</div>
-              </div>
-            </div>
-            <div class="activity-pts">+15 pts</div>
-          </div>
-
-          <div class="activity-row">
-            <div class="activity-left">
-              <div class="activity-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="13" r="4"/><path d="M4 8h3l2-3h6l2 3h3v11H4z"/></svg></div>
-              <div>
-                <div class="activity-name">Cardboard box — Green Bin</div>
-                <div class="activity-date">Yesterday, 6:10 PM</div>
-              </div>
-            </div>
-            <div class="activity-pts">+10 pts</div>
-          </div>
-
-          <div class="activity-row">
-            <div class="activity-left">
-              <div class="activity-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="13" r="4"/><path d="M4 8h3l2-3h6l2 3h3v11H4z"/></svg></div>
-              <div>
-                <div class="activity-name">Old phone charger — E-waste</div>
-                <div class="activity-date">Sep 12, 5:02 PM</div>
-              </div>
-            </div>
-            <div class="activity-pts">+25 pts</div>
+          <div id="activityList">
+            <p style="color:var(--ink-soft); font-size:0.9rem; padding:14px 0;">Loading…</p>
           </div>
 
           <div style="margin-top:18px;">
@@ -152,17 +124,8 @@
       <div class="dash-side">
         <div class="card side-card">
           <h3>Nearby recycling centers</h3>
-          <div class="center-mini">
-            <div class="center-mini-name">Salt Lake Community Recycling Center</div>
-            <div class="center-mini-dist">1.2 km away</div>
-          </div>
-          <div class="center-mini">
-            <div class="center-mini-name">New Town E-Waste Drop-off</div>
-            <div class="center-mini-dist">3.4 km away</div>
-          </div>
-          <div class="center-mini">
-            <div class="center-mini-name">Sector V Collection Point</div>
-            <div class="center-mini-dist">4.8 km away</div>
+          <div id="nearbyCenters">
+            <p style="color:var(--ink-soft); font-size:0.9rem;">Loading…</p>
           </div>
           <div style="margin-top:16px;">
             <a href="centers.html" class="btn btn-outline" style="padding:10px 18px; font-size:0.85rem; width:100%; justify-content:center;">See all centers</a>
@@ -186,6 +149,9 @@
   </div>
 </footer>
 
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
 <script src="js/script.js"></script>
+<script src="js/dashboard.js"></script>
 </body>
 </html>

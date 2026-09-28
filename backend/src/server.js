@@ -8,6 +8,11 @@ const dashboardRoutes = require('./routes/dashboard.routes');
 const centerRoutes = require('./routes/centers.routes');
 
 const app = express();
+const connectDB = require('./db');
+
+// Connect to MongoDB
+if (process.env.NODE_ENV !== 'test') connectDB();
+
 
 const allowedOrigins = (process.env.CORS_ORIGIN || '')
   .split(',')
@@ -44,6 +49,10 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`CashTrash API running at http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`CashTrash API running at http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;

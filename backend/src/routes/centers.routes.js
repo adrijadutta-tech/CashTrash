@@ -1,33 +1,37 @@
 const express = require('express');
-const db = require('../db');
+const Center = require('../models/RecyclingCenter.model');
 
 const router = express.Router();
 
-// Public — no login needed to browse recycling centers
-router.get('/', (req, res) => {
-  const { search, material } = req.query;
+router.get('/', async (req, res) => {
+  try {
+    const { search, material } = req.query;
 
-  let rows = db.prepare('SELECT * FROM centers ORDER BY distance_km ASC').all();
+    let query = {};
+    if (search) {
+      const q = new RegExp(search, 'i');
+      query.$or = [{ name: q }, { address: q }];
+    }
+    if (material && material !== 'all') {
+      query.materials = new RegExp(material, 'i');
+    }
 
-  if (search) {
-    const q = search.toLowerCase();
-    rows = rows.filter((c) => c.name.toLowerCase().includes(q) || c.address.toLowerCase().includes(q));
+    const rows = await Center.find(query).sort({ distance_km: 1 });
+
+    const centers = rows.map((c) => ({
+      id: c._id,
+      name: c.name,
+      address: c.address,
+      distanceKm: c.distance_km,
+      materials: c.materials.split(','),
+      isOpen: !!c.is_open,
+      hoursNote: c.hours_note
+    }));
+
+    res.json({ centers });
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error' });
   }
-  if (material && material !== 'all') {
-    rows = rows.filter((c) => c.materials.split(',').includes(material));
-  }
-
-  const centers = rows.map((c) => ({
-    id: c.id,
-    name: c.name,
-    address: c.address,
-    distanceKm: c.distance_km,
-    materials: c.materials.split(','),
-    isOpen: !!c.is_open,
-    hoursNote: c.hours_note
-  }));
-
-  res.json({ centers });
 });
 
 module.exports = router;

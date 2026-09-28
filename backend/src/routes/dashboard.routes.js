@@ -1,50 +1,48 @@
 const express = require('express');
-const db = require('../db');
+const User = require('../models/User.model');
+const Scan = require('../models/Scan.model');
 const { requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
-const NEXT_REWARD_TARGET = 1500; // points needed for the next reward tier
+const NEXT_REWARD_TARGET = 1500;
 
-router.get('/', requireAuth, (req, res) => {
-  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.userId);
+router.get('/', requireAuth, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
-  const totals = db
-    .prepare(`
-      SELECT
-        COUNT(*) AS total_scans,
-        COUNT(CASE WHEN created_at >= datetime('now', 'start of month') THEN 1 END) AS scans_this_month
-      FROM scans WHERE user_id = ?
-    `)
-    .get(req.userId);
+    const totalScans = await Scan.countDocuments({ user_id: req.userId });
+    
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+    
+    const scansThisMonth = await Scan.countDocuments({ 
+      user_id: req.userId, 
+      created_at: { $gte: startOfMonth } 
+    });
 
-  const recent = db
-    .prepare('SELECT * FROM scans WHERE user_id = ? ORDER BY created_at DESC LIMIT 3')
-    .all(req.userId);
+    const recent = await Scan.find({ user_id: req.userId }).sort({ created_at: -1 }).limit(3);
 
-  // "Accuracy" here just means: wasn't flagged low-confidence (<90%).
-  // There's no ground-truth labeling in this prototype to check against.
-  const accuracyRow = db
-    .prepare(`
-      SELECT
-        COUNT(*) AS n,
-        COUNT(CASE WHEN confidence >= 90 THEN 1 END) AS confident
-      FROM scans WHERE user_id = ?
-    `)
-    .get(req.userId);
-  const accuracy = accuracyRow.n > 0
-    ? Math.round((accuracyRow.confident / accuracyRow.n) * 100)
-    : null;
+    const confidentCount = await Scan.countDocuments({ user_id: req.userId, confidence: { $gte: 90 } });
+    
+    const accuracy = totalScans > 0
+      ? Math.round((confidentCount / totalScans) * 100)
+      : null;
 
-  res.json({
-    points: user.points,
-    itemsScanned: totals.total_scans,
-    itemsThisMonth: totals.scans_this_month,
-    accuracy,
-    nextRewardTarget: NEXT_REWARD_TARGET,
-    pointsToNextReward: Math.max(NEXT_REWARD_TARGET - user.points, 0),
-    recentActivity: recent
-  });
+    res.json({
+      points: user.points,
+      itemsScanned: totalScans,
+      itemsThisMonth: scansThisMonth,
+      accuracy,
+      nextRewardTarget: NEXT_REWARD_TARGET,
+      pointsToNextReward: Math.max(NEXT_REWARD_TARGET - user.points, 0),
+      recentActivity: recent
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 module.exports = router;

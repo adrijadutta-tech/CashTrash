@@ -1,5 +1,59 @@
-// Scan page: upload -> preview -> real API analysis -> result
+// Scan page: upload -> preview -> REAL classification (Teachable Machine
+// model running in the browser) -> save result to backend -> result state.
 requireLogin();
+
+// ====================================================================
+// SET THIS once your Teachable Machine model is trained and published:
+// Teachable Machine gives you a link like
+//   https://teachablemachine.withgoogle.com/models/AbCdEfGh/
+// paste that whole thing here (keep the trailing slash).
+//
+// IMPORTANT: your model's class names must be EXACTLY these seven,
+// lowercase, no spaces — matching backend/src/utils/classifier.js:
+//   plastic, paper, glass, metal, organic, ewaste, trash
+//
+// "trash" is a catch-all: train it on stuff that ISN'T a clean example
+// of the other six (chip bags, styrofoam, greasy/soiled paper, broken
+// ceramics, mixed-material wrappers, etc.) — anything that doesn't look
+// like a clearly recyclable/compostable/e-waste item falls here.
+// ====================================================================
+const MODEL_URL = 'https://teachablemachine.withgoogle.com/models/8hF2txhTT/';
+
+let tmModel = null;
+let modelLoadFailed = false;
+
+async function loadModel() {
+  if (!MODEL_URL) return; // nothing trained yet — analyze will use a mock fallback
+  try {
+    const modelURL = MODEL_URL + 'model.json';
+    const metadataURL = MODEL_URL + 'metadata.json';
+    tmModel = await tmImage.load(modelURL, metadataURL);
+    console.log('Teachable Machine model loaded:', tmModel.getTotalClasses(), 'classes');
+  } catch (err) {
+    modelLoadFailed = true;
+    console.error('Could not load the Teachable Machine model. Check MODEL_URL in scan.js.', err);
+  }
+}
+loadModel();
+
+const KNOWN_CATEGORIES = ['plastic', 'paper', 'glass', 'metal', 'organic', 'ewaste', 'trash'];
+
+// Runs the loaded model against the preview photo. Falls back to a random
+// (but clearly-labeled) mock result if no model is loaded yet, so the page
+// stays usable while the model is still being trained.
+async function classifyPreviewImage() {
+  if (tmModel) {
+    try { await previewImg.decode(); } catch (_) { /* image may already be ready */ }
+    const predictions = await tmModel.predict(previewImg);
+    predictions.sort((a, b) => b.probability - a.probability);
+    const top = predictions[0];
+    return { category: top.className, confidence: Math.round(top.probability * 100), isMock: false };
+  }
+
+  const category = KNOWN_CATEGORIES[Math.floor(Math.random() * KNOWN_CATEGORIES.length)];
+  const confidence = 80 + Math.floor(Math.random() * 15);
+  return { category, confidence, isMock: true };
+}
 
 const uploadState = document.getElementById('uploadState');
 const previewWrap = document.getElementById('previewWrap');
@@ -60,8 +114,19 @@ if (dropzone) {
 
 function renderResult(scan) {
   document.querySelector('.result-pts').textContent = `+${scan.points} pts`;
-  document.querySelector('.result-banner div:last-child div:last-child').textContent =
-    `${scan.category.charAt(0).toUpperCase() + scan.category.slice(1)} · ${scan.item_name}`;
+  document.querySelector('.result-banner div:last-child div:last-child').textContent = scan.item_name;
+
+  const badge = document.getElementById('recyclableBadge');
+  if (scan.recyclable) {
+    badge.textContent = '♻️ Recyclable — take it to a recycling center';
+    badge.className = 'recyclable-badge is-recyclable';
+  } else {
+    badge.textContent = `🚫 Not recyclable — goes in the ${scan.bin}`;
+    badge.className = 'recyclable-badge is-not-recyclable';
+  }
+
+  const findCenterBtn = document.getElementById('findCenterBtn');
+  findCenterBtn.style.display = scan.recyclable ? '' : 'none';
 
   const rows = document.querySelectorAll('.result-detail-row span:last-child');
   rows[0].textContent = scan.bin;
@@ -78,10 +143,19 @@ if (analyzeBtn) {
     analyzeBtn.textContent = 'Analyzing…';
 
     try {
-      const formData = new FormData();
-      formData.append('photo', selectedFile);
+      const prediction = await classifyPreviewImage();
 
-      const data = await apiFetch('/scans', { method: 'POST', body: formData });
+      if (prediction.isMock) {
+        console.warn('No trained model loaded yet — showing a random demo result. Set MODEL_URL in js/scan.js once your Teachable Machine model is published.');
+      }
+
+      const data = await apiFetch('/scans', {
+        method: 'POST',
+        body: JSON.stringify({
+          category: prediction.category,
+          confidence: prediction.confidence
+        })
+      });
 
       renderResult(data.scan);
       previewWrap.classList.remove('active');

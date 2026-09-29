@@ -5,6 +5,7 @@ const scanSchema = new mongoose.Schema({
   item_name: { type: String, required: true },
   category: { type: String, required: true, index: true },
   bin: { type: String, required: true },
+  recyclable: { type: Boolean, default: false },
   disposal_note: { type: String, required: true },
   confidence: { type: Number, required: true },
   points: { type: Number, required: true }

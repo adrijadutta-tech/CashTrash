@@ -1,40 +1,48 @@
 const express = require('express');
-const multer = require('multer');
 const Scan = require('../models/Scan.model');
 const User = require('../models/User.model');
 const { requireAuth } = require('../middleware/auth');
-const { classifyImage } = require('../utils/classifier');
+const { getCategoryInfo, CATEGORIES } = require('../utils/classifier');
 
 const router = express.Router();
 
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 8 * 1024 * 1024 } // 8MB
-});
-
-router.post('/', requireAuth, upload.single('photo'), async (req, res) => {
+// The photo is classified in the browser (Teachable Machine model in
+// frontend/js/scan.js). The frontend sends the result here as JSON:
+//   { category: 'plastic', confidence: 93 }
+// and this route looks up the bin/points/disposal info and saves the scan.
+router.post('/', requireAuth, async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No photo was uploaded (expected field name "photo").' });
+    const { category, confidence } = req.body || {};
+
+    const info = getCategoryInfo(typeof category === 'string' ? category.toLowerCase().trim() : '');
+    if (!info) {
+      return res.status(400).json({
+        error: `Unknown category. Expected one of: ${CATEGORIES.join(', ')}.`
+      });
     }
 
-    const result = classifyImage(req.file.buffer);
+    const conf = Number(confidence);
+    if (!Number.isFinite(conf) || conf < 0 || conf > 100) {
+      return res.status(400).json({ error: 'Confidence must be a number from 0 to 100.' });
+    }
 
     const scan = new Scan({
       user_id: req.userId,
-      item_name: result.itemName,
-      category: result.category,
-      bin: result.bin,
-      disposal_note: result.disposalNote,
-      confidence: result.confidence,
-      points: result.points
+      item_name: info.label,
+      category: info.category,
+      bin: info.bin,
+      recyclable: info.recyclable,
+      disposal_note: info.disposalNote,
+      confidence: Math.round(conf),
+      points: info.points
     });
-    
+
     await scan.save();
-    await User.findByIdAndUpdate(req.userId, { $inc: { points: result.points } });
+    await User.findByIdAndUpdate(req.userId, { $inc: { points: info.points } });
 
     res.status(201).json({ scan });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -42,11 +50,11 @@ router.post('/', requireAuth, upload.single('photo'), async (req, res) => {
 router.get('/', requireAuth, async (req, res) => {
   try {
     const { type } = req.query;
-    let query = { user_id: req.userId };
+    const query = { user_id: req.userId };
     if (type && type !== 'all') {
       query.category = type;
     }
-    
+
     const scans = await Scan.find(query).sort({ created_at: -1 });
     res.json({ scans });
   } catch (err) {

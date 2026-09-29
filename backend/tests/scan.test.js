@@ -34,13 +34,29 @@ describe('Scan API', () => {
     token = res.body.token;
   });
 
-  it('should fail to upload scan if no photo provided', async () => {
+  it('should reject a scan with an unknown category', async () => {
     const res = await request(app)
       .post('/api/scans')
-      .set('Authorization', `Bearer ${token}`);
-      
+      .set('Authorization', `Bearer ${token}`)
+      .send({ category: 'banana', confidence: 90 });
+
     expect(res.statusCode).toEqual(400);
-    expect(res.body.error).toContain('No photo was uploaded');
+    expect(res.body.error).toContain('Unknown category');
+  });
+
+  it('should save a scan and add points', async () => {
+    const res = await request(app)
+      .post('/api/scans')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ category: 'plastic', confidence: 93 });
+
+    expect(res.statusCode).toEqual(201);
+    expect(res.body.scan.category).toEqual('plastic');
+    expect(res.body.scan.recyclable).toEqual(true);
+    expect(res.body.scan.points).toEqual(15);
+
+    const me = await request(app).get('/api/auth/me').set('Authorization', `Bearer ${token}`);
+    expect(me.body.user.points).toEqual(15);
   });
 
   it('should get empty scan history initially', async () => {

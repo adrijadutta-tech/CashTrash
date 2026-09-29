@@ -1,6 +1,13 @@
 // Shared helper for talking to the CashTrash backend.
-// Change API_BASE_URL if your backend runs somewhere other than localhost:4000.
-const API_BASE_URL = 'http://localhost:4000/api';
+//
+// LIVE_API_URL is the public address of the deployed backend (Render, Vercel, etc.).
+// Paste your backend's URL here after deploying it, ending in /api.
+const LIVE_API_URL = 'https://cashtrash.onrender.com/api';
+
+// When you open the site on your own computer it talks to your local backend;
+// everywhere else (the live site, other people's phones/laptops) it uses LIVE_API_URL.
+const IS_LOCAL = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
+const API_BASE_URL = IS_LOCAL ? 'http://localhost:4000/api' : LIVE_API_URL;
 
 const Auth = {
   getToken() { return localStorage.getItem('cashtrash_token'); },
